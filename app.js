@@ -1,39 +1,14 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
+const routerProducts = require('./routes/products');
+const routerCarts = require('./routes/carts');
 
-const ProductManager = require("./ProductManager")
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const productManager = new ProductManager("Products.json");
+app.use('/api/products', routerProducts);
+app.use('/api/carts', routerCarts);
 
-app.get('/products', async (req, res) => {
-    try {
-        const limit = parseInt(req.query.limit) || null;
-        const products = await productManager.getProducts();
-
-        if (limit !== null) {
-            res.json({ products: products.slice(0, limit) });
-        } else {
-            res.json({ products });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-app.get('/products/:pid', async (req, res) => {
-        const product = await productManager.getProductById(
-          parseInt(req.params.pid));
-        
-        if (product) {
-            res.json({ product });
-        } else {
-          res.json({ message: 'el id del producto no fue encontrado' });
-        }
-    
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(8080, () => {
+  console.log('Server running on port 8080');
 });
